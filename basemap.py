@@ -71,4 +71,33 @@ state_codes = {'01': 'Alabama',
             #   '72': 'Puerto Rico'
                }            
 
+# define a colorramp
+num_colors = 12
+cm = plt.get_cmap('Blues')
+blues = [cm(1.*i/num_colors) for i in range(num_colors)]
+
+# add colorbar legend
+cmap = mpl.colors.ListedColormap(blues)
+# define the bins
+bounds = np.linspace(0.0, 1.0, num_colors)
+
+# read each states shapefile
+for key in state_codes.keys():
+    m.readshapefile('../input/shapefiles/pums/tl_2013_{0}_puma10'.format(key),
+                    name='state', drawbounds=True, default_encoding='latin-1')
+                    
+    # loop through each PUMA and assign a random color from our colorramp
+    for info, shape in zip(m.state_info, m.state):
+        patches = [Polygon(np.array(shape), True)]
+        pc = PatchCollection(patches, edgecolor='k', linewidths=1., zorder=2)
+        pc.set_color(random.choice(blues))
+        ax.add_collection(pc)
+
+# create a second axes for the colorbar
+ax2 = fig.add_axes([0.82, 0.1, 0.03, 0.8])
+cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, ticks=bounds, boundaries=bounds,
+                               format='%1i')
+cb.ax.set_yticklabels([str(round(i, 2)) for i in bounds])
+
+plt.savefig('map.png')
 
