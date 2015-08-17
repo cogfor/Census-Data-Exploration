@@ -16,6 +16,25 @@ import zipfile
 import csv
 import sys
 
+def find_nearest_ind(array,value):
+    idx = (np.abs(array-value)).argmin()
+    return idx
+
+# http://stackoverflow.com/questions/17458580/embedding-small-plots-inside-subplots-in-matplotlib/17479417#17479417
+def add_subplot_axes(ax,rect):
+    fig = plt.gcf()
+    box = ax.get_position()
+    width = box.width
+    height = box.height
+    inax_position  = ax.transAxes.transform(rect[0:2])
+    transFigure = fig.transFigure.inverted()
+    infig_position = transFigure.transform(inax_position)
+    x = infig_position[0]
+    y = infig_position[1]
+    width *= rect[2]
+    height *= rect[3]
+    subax = fig.add_axes([x,y,width,height],frameon=False)
+    return subax
 
 
 fig = plt.figure(figsize=(20,10))
